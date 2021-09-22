@@ -1,5 +1,6 @@
 const express = require('express')
 const { conectarBD }=require('../database/conexion.js')
+const facturaModelo=require('../models/facturaModelo.js')
 
 class ServidorModelo{
 
@@ -9,6 +10,7 @@ class ServidorModelo{
         
         this.app = express()// config de express(get,post,put,delete)
         this.levantarBD();
+        this.auxiliares();
         this.llamarRutas();
     
     
@@ -26,14 +28,32 @@ class ServidorModelo{
       conectarBD();
     }
 
+    auxiliares(){
+      this.app.use(express.json())
+    }
+
     llamarRutas(){
 
         this.app.get('/Facturas', function (req, res) {
             res.send('wenas karencita')
           })
           
-          this.app.post('/Facturas/nuevo', function (req, res) {
-            res.send('wenas karencita')
+          this.app.post('/Facturas/nuevo', async function (req, res) {
+           let datosFactura=req.body;
+           try{
+            let factura=new facturaModelo(datosFactura);
+            await factura.save();
+            res.status(200).json({
+              respuesta:"exito",
+              datos:factura
+            })
+
+           }catch(error){
+            res.status(400).json({
+              respuesta:"error",
+              datos:error
+            })
+           }
           })
           
           this.app.put('/Facturas/cambiar', function (req, res) {
