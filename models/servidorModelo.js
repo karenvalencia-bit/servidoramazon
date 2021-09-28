@@ -36,8 +36,22 @@ class ServidorModelo{
 
     llamarRutas(){
 
-        this.app.get('/Facturas', function (req, res) {
-            res.send('wenas karencita')
+        this.app.get('/Facturas', async function (req, res) {
+            try{
+              let facturas= await facturaModelo.find()
+              res.status(200).json({
+                respuesta: "exito",
+                datos: facturas
+            })
+
+            }
+            catch(error){
+              res.status(400).json({
+                respuesta:"error",
+                datos:error
+              })
+
+            }
           })
           
           this.app.post('/Facturas/nuevo', async function (req, res) {
